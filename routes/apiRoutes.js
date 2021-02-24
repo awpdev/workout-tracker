@@ -30,6 +30,8 @@ router.post('/api/workouts', ({ body }, res) => {
     });
 });
 
+module.exports = router;
+
 // add an exercise to workout
 
 
