@@ -12,7 +12,7 @@ apiRouter.get('/api/workouts', (req, res) => {
   
   ])
   .then(dbWorkout => {
-    console.log(`Result of agregate: ${dbWorkout}`);
+    //console.log(`Result of agregate: ${dbWorkout}`);
     res.json(dbWorkout);
   })
   .catch(err => {
@@ -22,10 +22,13 @@ apiRouter.get('/api/workouts', (req, res) => {
 });
 
 // create workout
-apiRouter.post('/api/workouts', ({ body }, res) => {
+apiRouter.post('/api/workouts', (req, res) => {
   //console.log(req.body);
-  db.Workout.create({ body })
+  db.Workout.create({
+    day: new Date().setDate(new Date.getDate())
+  })
     .then(dbWorkout => {
+      //console.log(`created workout: ${dbWorkout}`);
       res.json(dbWorkout);
     })
     .catch(err => {
@@ -35,13 +38,16 @@ apiRouter.post('/api/workouts', ({ body }, res) => {
 
 // add an exercise on a given workout
 apiRouter.put('/api/workouts/:id', (req, res) => {
-  console.log(req.body);
+  //console.log(req.body);
   db.Workout.findOneAndUpdate(
     { _id: req.params.id },
-    { $push: {exercises: req.body} },
+    { 
+      $inc: { totalDuration: req.body.duration},
+      $push: {exercises: req.body} 
+    },
     { new: true })
     .then(dbWorkout => {
-      console.log(dbWorkout);
+      //console.log(`add exercise ${dbWorkout}`);
       res.json(dbWorkout);
     }).catch(err => {
       res.status(400).json(err);
@@ -63,6 +69,7 @@ apiRouter.get('/api/workouts/range', (req, res) => {
     { $limit: 7 }
   ])
     .then(dbWorkout => {
+      //console.log(`get stats for past 7 days ${dbWorkout}`);
       res.json(dbWorkout);
     })
     .catch(err => {
